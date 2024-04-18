@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  dice_icons:
+    dependency: "direct main"
+    description:
+      name: dice_icons
+      sha256: "5a36d4ef86a94c3cb1c1596696e71746001cb6a1ffcfb235add45f6751d211e0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.7"
   fake_async:
     dependency: transitive
     description:
@@ -210,3 +218,4 @@ packages:
     version: "13.0.0"
 sdks:
   dart: ">=3.3.1 <4.0.0"
+  flutter: ">=1.17.0"
