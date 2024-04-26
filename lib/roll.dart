@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'package:dice_icons/dice_icons.dart';
 
-class DiceRow extends StatefulWidget {
-  final bool roll;
-  const DiceRow({super.key, required this.roll});
+class DiceRow extends StatelessWidget {
+  DiceRow({super.key, required this.dicePoints});
+  final List<int> dicePoints;
 
-  @override
-  State<DiceRow> createState() => _DiceRowState();
-}
-
-class _DiceRowState extends State<DiceRow> {
   final double diceSize = 70;
+
   final List<IconData> diceIcon = [
     DiceIcons.dice0,
     DiceIcons.dice1,
@@ -24,7 +19,6 @@ class _DiceRowState extends State<DiceRow> {
 
   @override
   Widget build(BuildContext context) {
-    List<int> dicePoints = generateDicePoints(widget.roll);
     return Row(children: [
       const SizedBox(
         width: 25,
@@ -36,20 +30,6 @@ class _DiceRowState extends State<DiceRow> {
         );
       }),
     ]);
-  }
-
-  List<int> generateDicePoints(bool roll) {
-    if (roll) {
-      Random random = Random();
-      List<int> randomIntegers = [];
-      for (int i = 0; i <= 4; i++) {
-        int randomNumber = random.nextInt(6) + 1;
-        randomIntegers.add(randomNumber);
-      }
-      return randomIntegers;
-    } else {
-      return List.filled(5, 0);
-    }
   }
 }
 
