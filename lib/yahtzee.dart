@@ -19,7 +19,9 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
     return Column(
       children: [
         Text(_diceRolledTimes.toString()),
-        ScoreBlock(dicePoints: _dicePoints,),
+        ScoreBlock(
+          dicePoints: _dicePoints,
+        ),
         DiceRow(
           dicePoints: _dicePoints,
         ),
