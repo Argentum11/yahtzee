@@ -30,14 +30,14 @@ class ScoreColumn extends StatefulWidget {
 }
 
 class _ScoreColumnState extends State<ScoreColumn> {
-  int faceCount(List<int> dicePoints, int face) {
+  int faceScore(List<int> dicePoints, int face) {
     int faceAmount = 0;
     for (int i = 0; i <= 4; i++) {
       if (dicePoints[i] == face) {
         faceAmount++;
       }
     }
-    return faceAmount;
+    return faceAmount * face;
   }
 
   int nOfAKind(List<int> dicePoints, n) {
@@ -91,7 +91,7 @@ class _ScoreColumnState extends State<ScoreColumn> {
     List<int> faceAmount = getFaceAmount(dicePoints);
     if (faceAmount[3] == 1 && faceAmount[4] == 1) {
       if ((faceAmount[1] == 1 && faceAmount[2] == 1) ||
-          (faceAmount[2] == 1 && faceAmount[3] == 1) ||
+          (faceAmount[2] == 1 && faceAmount[5] == 1) ||
           (faceAmount[5] == 1 && faceAmount[6] == 1)) {
         return 30;
       }
@@ -126,7 +126,7 @@ class _ScoreColumnState extends State<ScoreColumn> {
   int chance(List<int> dicePoints) {
     int totalPoints = 0;
     for (int i = 0; i <= 4; i++) {
-      totalPoints+=dicePoints[i];
+      totalPoints += dicePoints[i];
     }
     return totalPoints;
   }
@@ -134,7 +134,7 @@ class _ScoreColumnState extends State<ScoreColumn> {
   List<Function> generateAllDiceFaceCountFunctions() {
     List<Function> functions = [];
     for (int i = 1; i <= 6; i++) {
-      functions.add((List<int> dicePoints) => faceCount(dicePoints, i));
+      functions.add((List<int> dicePoints) => faceScore(dicePoints, i));
     }
     for (int i = 3; i <= 4; i++) {
       functions.add((List<int> dicePoints) => nOfAKind(dicePoints, i));
@@ -167,7 +167,6 @@ class _ScoreColumnState extends State<ScoreColumn> {
     );
   }
 }
-
 
 class ScoreRow extends StatefulWidget {
   const ScoreRow({super.key, required this.score});
