@@ -12,7 +12,8 @@ class YahtzeeGamePage extends StatefulWidget {
 
 class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
   int _diceRolledTimes = 0;
-  List<int> _dicePoints = List.filled(5, 0);
+  final List<int> _dicePoints = List.filled(5, 0);
+  final List<bool> _lock = List.filled(5, false);
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,8 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
         ),
         DiceRow(
           dicePoints: _dicePoints,
+          lockDice: lockDice,
+          lock: _lock,
         ),
         RollButton(
           onPressed: rollDice,
@@ -39,10 +42,18 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
         _diceRolledTimes++;
         Random random = Random();
         for (int i = 0; i <= 4; i++) {
-          int randomNumber = random.nextInt(6) + 1;
-          _dicePoints[i] = randomNumber;
+          if (!_lock[i]) {
+            int randomNumber = random.nextInt(6) + 1;
+            _dicePoints[i] = randomNumber;
+          }
         }
       }
+    });
+  }
+
+  void lockDice(int diceIndex) {
+    setState(() {
+      _lock[diceIndex] = !_lock[diceIndex];
     });
   }
 }

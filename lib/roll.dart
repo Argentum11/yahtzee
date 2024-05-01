@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:dice_icons/dice_icons.dart';
 
-class DiceRow extends StatelessWidget {
-  DiceRow({super.key, required this.dicePoints});
+class DiceRow extends StatefulWidget {
+  const DiceRow(
+      {super.key,
+      required this.dicePoints,
+      required this.lockDice,
+      required this.lock});
   final List<int> dicePoints;
+  final Function(int) lockDice;
+  final List<bool> lock;
 
-  final double diceSize = 70;
+  @override
+  State<DiceRow> createState() => _DiceRowState();
+}
 
+class _DiceRowState extends State<DiceRow> {
+  final double diceSize = 60;
+  List<bool> isPressed = List.filled(5, false);
   final List<IconData> diceIcon = [
     DiceIcons.dice0,
     DiceIcons.dice1,
@@ -19,14 +30,32 @@ class DiceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
+    return Row(mainAxisSize: MainAxisSize.min, children: [
       const SizedBox(
-        width: 25,
+        width: 4,
       ),
-      ...dicePoints.map((point) {
-        return Icon(
-          diceIcon[point],
-          size: diceSize,
+      ...List.generate(widget.dicePoints.length, (index) {
+        final point = widget.dicePoints[index];
+        return IconButton(
+          onPressed: () {
+            widget.lockDice(index);
+            /*setState(() {
+              isPressed[index] = !isPressed[index];
+            });*/
+          },
+          icon: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: widget.lock[index] ? Colors.blue : Colors.transparent,
+                width: 0.8,
+              ),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Icon(
+              diceIcon[point],
+              size: diceSize,
+            ),
+          ),
         );
       }),
     ]);
