@@ -242,12 +242,15 @@ class ScoreBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {},
-      child: Padding(
-        padding: const EdgeInsets.only(left: 5),
+    BorderRadius roundRadius = BorderRadius.circular(12);
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 5),
+      child: InkWell(
+        onTap: () {},
+        borderRadius: roundRadius,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: roundRadius,
           child: Container(
             color: const Color.fromARGB(255, 167, 215, 242),
             child: SizedBox.square(
