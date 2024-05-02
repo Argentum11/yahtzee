@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class ScoreBlock extends StatefulWidget {
-  const ScoreBlock({super.key, required this.dicePoints});
+class ScoreSection extends StatefulWidget {
+  const ScoreSection({super.key, required this.dicePoints});
   final List<int> dicePoints;
 
   @override
-  State<ScoreBlock> createState() => _ScoreBlockState();
+  State<ScoreSection> createState() => _ScoreSectionState();
 }
 
-class _ScoreBlockState extends State<ScoreBlock> {
+class _ScoreSectionState extends State<ScoreSection> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -152,6 +151,7 @@ class _ScoreColumnState extends State<ScoreColumn> {
     functions.add((List<int> dicePoints) => chance(dicePoints));
     return functions;
   }
+
   @override
   Widget build(BuildContext context) {
     List<Function> allDiceFaceCountFunctions =
@@ -165,29 +165,50 @@ class _ScoreColumnState extends State<ScoreColumn> {
       allScoreData.add(ScoreData(faceScore(widget.dicePoints, i), "dice_$i"));
     }
     for (int i = 3; i <= 4; i++) {
-      allScoreData.add(ScoreData(nOfAKind(widget.dicePoints, i),"${i}_of_a_kind"));
+      allScoreData
+          .add(ScoreData(nOfAKind(widget.dicePoints, i), "${i}_of_a_kind"));
     }
-    allScoreData.add(ScoreData(fullHouse(widget.dicePoints),"full_house"));
-    allScoreData.add(ScoreData(smallStraight(widget.dicePoints),"small_straight"));
-    allScoreData.add(ScoreData(largeStraight(widget.dicePoints),"large_straight"));
-    allScoreData.add(ScoreData(yahtzee(widget.dicePoints),"yahtzee"));
-    allScoreData.add(ScoreData(chance(widget.dicePoints),"chance"));
+    allScoreData.add(ScoreData(fullHouse(widget.dicePoints), "full_house"));
+    allScoreData
+        .add(ScoreData(smallStraight(widget.dicePoints), "small_straight"));
+    allScoreData
+        .add(ScoreData(largeStraight(widget.dicePoints), "large_straight"));
+    allScoreData.add(ScoreData(yahtzee(widget.dicePoints), "yahtzee"));
+    allScoreData.add(ScoreData(chance(widget.dicePoints), "chance"));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [for (ScoreData sd in allScoreData.take(6)) ScoreRow(scoreData: sd,)],
+        const SizedBox(
+          width: 5,
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [for (ScoreData sd in allScoreData.skip(6)) ScoreRow(scoreData: sd,)],
+          children: [
+            for (ScoreData sd in allScoreData.take(6))
+              ScoreRow(
+                scoreData: sd,
+              )
+          ],
+        ),
+        const SizedBox(
+          width: 6,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (ScoreData sd in allScoreData.skip(6))
+              ScoreRow(
+                scoreData: sd,
+              )
+          ],
         )
       ],
     );
   }
 }
+
+const double blockSize = 60;
 
 class ScoreRow extends StatefulWidget {
   const ScoreRow({super.key, required this.scoreData});
@@ -204,11 +225,46 @@ class _ScoreRowState extends State<ScoreRow> {
       children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset("assets/${widget.scoreData.image}.png")),
-        Text(widget.scoreData.score.toString()),
-        const Text(" ")
+            child: Image.asset(
+              "assets/${widget.scoreData.image}.png",
+              width: blockSize,
+            )),
+        ScoreBlock(score: widget.scoreData.score),
+        ScoreBlock(score: widget.scoreData.score)
       ],
     );
+  }
+}
+
+class ScoreBlock extends StatelessWidget {
+  const ScoreBlock({super.key, required this.score});
+  final int score;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            color: const Color.fromARGB(255, 167, 215, 242),
+            child: SizedBox.square(
+              dimension: blockSize,
+              child: Text(
+                score.toString(),
+                style: const TextStyle(
+                    color: Color.fromARGB(255, 56, 154, 196),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 40),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ); //
   }
 }
 
