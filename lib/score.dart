@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class ScoreBlock extends StatefulWidget {
   const ScoreBlock({super.key, required this.dicePoints});
@@ -19,7 +20,12 @@ class _ScoreBlockState extends State<ScoreBlock> {
   }
 }
 
-class Score {}
+class ScoreData {
+  final int score;
+  final String image;
+
+  const ScoreData(this.score, this.image);
+}
 
 class ScoreColumn extends StatefulWidget {
   const ScoreColumn({super.key, required this.dicePoints});
@@ -146,7 +152,6 @@ class _ScoreColumnState extends State<ScoreColumn> {
     functions.add((List<int> dicePoints) => chance(dicePoints));
     return functions;
   }
-
   @override
   Widget build(BuildContext context) {
     List<Function> allDiceFaceCountFunctions =
@@ -155,13 +160,29 @@ class _ScoreColumnState extends State<ScoreColumn> {
     for (var func in allDiceFaceCountFunctions) {
       scores.add(func(widget.dicePoints));
     }
+    List<ScoreData> allScoreData = [];
+    for (int i = 1; i <= 6; i++) {
+      allScoreData.add(ScoreData(faceScore(widget.dicePoints, i), "dice_$i"));
+    }
+    for (int i = 3; i <= 4; i++) {
+      allScoreData.add(ScoreData(nOfAKind(widget.dicePoints, i),"${i}_of_a_kind"));
+    }
+    allScoreData.add(ScoreData(fullHouse(widget.dicePoints),"full_house"));
+    allScoreData.add(ScoreData(smallStraight(widget.dicePoints),"small_straight"));
+    allScoreData.add(ScoreData(largeStraight(widget.dicePoints),"large_straight"));
+    allScoreData.add(ScoreData(yahtzee(widget.dicePoints),"yahtzee"));
+    allScoreData.add(ScoreData(chance(widget.dicePoints),"chance"));
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Column(
-          children: [for (int score in scores.take(6)) ScoreRow(score: score)],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [for (ScoreData sd in allScoreData.take(6)) ScoreRow(scoreData: sd,)],
         ),
         Column(
-          children: [for (int score in scores.skip(6)) ScoreRow(score: score)],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [for (ScoreData sd in allScoreData.skip(6)) ScoreRow(scoreData: sd,)],
         )
       ],
     );
@@ -169,8 +190,8 @@ class _ScoreColumnState extends State<ScoreColumn> {
 }
 
 class ScoreRow extends StatefulWidget {
-  const ScoreRow({super.key, required this.score});
-  final int score;
+  const ScoreRow({super.key, required this.scoreData});
+  final ScoreData scoreData;
 
   @override
   State<ScoreRow> createState() => _ScoreRowState();
@@ -180,7 +201,13 @@ class _ScoreRowState extends State<ScoreRow> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [Text(widget.score.toString()), const Text(" ")],
+      children: [
+        ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset("assets/${widget.scoreData.image}.png")),
+        Text(widget.scoreData.score.toString()),
+        const Text(" ")
+      ],
     );
   }
 }
