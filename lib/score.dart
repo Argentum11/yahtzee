@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ScoreSection extends StatefulWidget {
-  const ScoreSection({super.key, required this.dicePoints});
+  const ScoreSection(
+      {super.key,
+      required this.dicePoints,
+      required this.lockScore,
+      required this.scoreLock});
   final List<int> dicePoints;
+  final Function(int, int) lockScore;
+  final List<bool> scoreLock;
 
   @override
   State<ScoreSection> createState() => _ScoreSectionState();
@@ -13,7 +19,11 @@ class _ScoreSectionState extends State<ScoreSection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ScoreColumn(dicePoints: widget.dicePoints),
+        ScoreColumn(
+          dicePoints: widget.dicePoints,
+          lockScore: widget.lockScore,
+          scoreLock: widget.scoreLock,
+        ),
       ],
     );
   }
@@ -27,8 +37,14 @@ class ScoreData {
 }
 
 class ScoreColumn extends StatefulWidget {
-  const ScoreColumn({super.key, required this.dicePoints});
+  const ScoreColumn(
+      {super.key,
+      required this.dicePoints,
+      required this.lockScore,
+      required this.scoreLock});
   final List<int> dicePoints;
+  final Function(int, int) lockScore;
+  final List<bool> scoreLock;
 
   @override
   State<ScoreColumn> createState() => _ScoreColumnState();
@@ -185,22 +201,27 @@ class _ScoreColumnState extends State<ScoreColumn> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (ScoreData sd in allScoreData.take(6))
+            for (int i = 0; i <= 5; i++)
               ScoreRow(
-                scoreData: sd,
+                scoreData: allScoreData[i],
+                scoreIndex: i,
+                lockScore: widget.lockScore,
+                blockLock: widget.scoreLock[i],
               )
           ],
         ),
         const SizedBox(
-          width: 6,
+          width: 4,
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (ScoreData sd in allScoreData.skip(6))
+            for (int i = 6; i <= 12; i++)
               ScoreRow(
-                scoreData: sd,
-              )
+                  scoreData: allScoreData[i],
+                  scoreIndex: i,
+                  lockScore: widget.lockScore,
+                  blockLock: widget.scoreLock[i])
           ],
         )
       ],
@@ -208,11 +229,19 @@ class _ScoreColumnState extends State<ScoreColumn> {
   }
 }
 
-const double blockSize = 60;
+const double blockSize = 58;
 
 class ScoreRow extends StatefulWidget {
-  const ScoreRow({super.key, required this.scoreData});
+  const ScoreRow(
+      {super.key,
+      required this.scoreData,
+      required this.scoreIndex,
+      required this.lockScore,
+      required this.blockLock});
   final ScoreData scoreData;
+  final int scoreIndex;
+  final Function(int, int) lockScore;
+  final bool blockLock;
 
   @override
   State<ScoreRow> createState() => _ScoreRowState();
@@ -229,16 +258,34 @@ class _ScoreRowState extends State<ScoreRow> {
               "assets/${widget.scoreData.image}.png",
               width: blockSize,
             )),
-        ScoreBlock(score: widget.scoreData.score),
-        ScoreBlock(score: widget.scoreData.score)
+        ScoreBlock(
+          score: widget.scoreData.score,
+          scoreIndex: widget.scoreIndex,
+          lockScore: widget.lockScore,
+          blockLock: widget.blockLock,
+        ),
+        ScoreBlock(
+          score: widget.scoreData.score,
+          scoreIndex: widget.scoreIndex,
+          lockScore: widget.lockScore,
+          blockLock: widget.blockLock,
+        )
       ],
     );
   }
 }
 
 class ScoreBlock extends StatelessWidget {
-  const ScoreBlock({super.key, required this.score});
+  const ScoreBlock(
+      {super.key,
+      required this.score,
+      required this.scoreIndex,
+      required this.lockScore,
+      required this.blockLock});
   final int score;
+  final int scoreIndex;
+  final Function(int, int) lockScore;
+  final bool blockLock;
 
   @override
   Widget build(BuildContext context) {
@@ -246,22 +293,33 @@ class ScoreBlock extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(left: 5),
-      child: InkWell(
-        onTap: () {},
-        borderRadius: roundRadius,
-        child: ClipRRect(
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: blockLock ? Colors.blue : Colors.transparent,
+            width: 0.8,
+          ),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: InkWell(
+          onTap: () {
+            lockScore(scoreIndex, score);
+          },
           borderRadius: roundRadius,
-          child: Container(
-            color: const Color.fromARGB(255, 167, 215, 242),
-            child: SizedBox.square(
-              dimension: blockSize,
-              child: Text(
-                score.toString(),
-                style: const TextStyle(
-                    color: Color.fromARGB(255, 56, 154, 196),
-                    fontWeight: FontWeight.w900,
-                    fontSize: 40),
-                textAlign: TextAlign.center,
+          child: ClipRRect(
+            borderRadius: roundRadius,
+            child: Container(
+              color: const Color.fromARGB(255, 167, 215, 242),
+              child: SizedBox.square(
+                dimension: blockSize,
+                child: Text(
+                  score.toString(),
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 56, 154, 196),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 40),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),

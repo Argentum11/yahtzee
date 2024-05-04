@@ -13,20 +13,24 @@ class YahtzeeGamePage extends StatefulWidget {
 class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
   int _diceRolledTimes = 0;
   final List<int> _dicePoints = List.filled(5, 0);
-  final List<bool> _lock = List.filled(5, false);
+  final List<bool> _diceLock = List.filled(5, false);
+  List<bool> _scoreLock = List.filled(13, false);
+  int _newScore = 0;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(_diceRolledTimes.toString()),
+        Text(_newScore.toString()),
         ScoreSection(
           dicePoints: _dicePoints,
+          lockScore: lockScore,
+          scoreLock: _scoreLock,
         ),
         DiceRow(
           dicePoints: _dicePoints,
           lockDice: lockDice,
-          lock: _lock,
+          lock: _diceLock,
         ),
         RollButton(
           onPressed: rollDice,
@@ -38,11 +42,12 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
 
   void rollDice() {
     setState(() {
+      _newScore = 0;
       if (_diceRolledTimes <= 2) {
         _diceRolledTimes++;
         Random random = Random();
         for (int i = 0; i <= 4; i++) {
-          if (!_lock[i]) {
+          if (!_diceLock[i]) {
             int randomNumber = random.nextInt(6) + 1;
             _dicePoints[i] = randomNumber;
           }
@@ -53,7 +58,20 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
 
   void lockDice(int diceIndex) {
     setState(() {
-      _lock[diceIndex] = !_lock[diceIndex];
+      _diceLock[diceIndex] = !_diceLock[diceIndex];
+    });
+  }
+
+  void lockScore(int scoreIndex, int score) {
+    setState(() {
+      if (!_scoreLock[scoreIndex]) {
+        _scoreLock = List.filled(13, false);
+        _scoreLock[scoreIndex] = true;
+      } else {
+        _scoreLock = List.filled(13, false);
+      }
+
+      _newScore = score;
     });
   }
 }
