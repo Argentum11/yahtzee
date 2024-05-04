@@ -42,6 +42,7 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
 
   void rollDice() {
     setState(() {
+      unlockScore();
       _newScore = 0;
       if (_diceRolledTimes <= 2) {
         _diceRolledTimes++;
@@ -62,13 +63,17 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
     });
   }
 
+  void unlockScore() {
+    _scoreLock = List.filled(13, false);
+  }
+
   void lockScore(int scoreIndex, int score) {
     setState(() {
       if (!_scoreLock[scoreIndex]) {
-        _scoreLock = List.filled(13, false);
+        unlockScore();
         _scoreLock[scoreIndex] = true;
       } else {
-        _scoreLock = List.filled(13, false);
+        unlockScore();
       }
 
       _newScore = score;
