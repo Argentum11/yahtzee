@@ -327,11 +327,11 @@ class ScoreBlock extends StatelessWidget {
             color: isPlayed
                 ? Colors.transparent
                 : blockLock
-                    ? Colors.blue
+                    ? const Color.fromARGB(255, 167, 215, 242)
                     : Colors.transparent,
             width: 0.8,
           ),
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: roundRadius,
         ),
         child: InkWell(
           onTap: () {
@@ -341,13 +341,17 @@ class ScoreBlock extends StatelessWidget {
           child: ClipRRect(
             borderRadius: roundRadius,
             child: Container(
-              color: const Color.fromARGB(255, 167, 215, 242),
+              color: isPlayed
+                  ? Colors.blueGrey
+                  : blockLock
+                      ? Colors.white
+                      : const Color.fromARGB(255, 167, 215, 242),
               child: SizedBox.square(
                 dimension: blockSize,
                 child: Text(
                   score.toString(),
-                  style: const TextStyle(
-                      color: Color.fromARGB(255, 56, 154, 196),
+                  style: TextStyle(
+                      color: isPlayed?const Color.fromARGB(255, 228, 160, 136): const Color.fromARGB(255, 56, 154, 196),
                       fontWeight: FontWeight.w900,
                       fontSize: 40),
                   textAlign: TextAlign.center,
