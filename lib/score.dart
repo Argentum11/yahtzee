@@ -121,12 +121,16 @@ class _ScoreColumnState extends State<ScoreColumn> {
   }
 
   int smallStraight(List<int> dicePoints) {
-    List<int> faceAmount = getFaceAmount(dicePoints);
-    if (faceAmount[3] == 1 && faceAmount[4] == 1) {
-      if ((faceAmount[1] == 1 && faceAmount[2] == 1) ||
-          (faceAmount[2] == 1 && faceAmount[5] == 1) ||
-          (faceAmount[5] == 1 && faceAmount[6] == 1)) {
-        return 30;
+    dicePoints.sort();
+    int consecutiveCount = 1;
+    for (int i = 0; i < dicePoints.length - 1; i++) {
+      if (dicePoints[i] + 1 == dicePoints[i + 1]) {
+        consecutiveCount++;
+        if (consecutiveCount >= 4) {
+          return 30;
+        }
+      } else if (dicePoints[i] != dicePoints[i + 1]) {
+        consecutiveCount = 1;
       }
     }
     return 0;
@@ -351,7 +355,9 @@ class ScoreBlock extends StatelessWidget {
                 child: Text(
                   score.toString(),
                   style: TextStyle(
-                      color: isPlayed?const Color.fromARGB(255, 228, 160, 136): const Color.fromARGB(255, 56, 154, 196),
+                      color: isPlayed
+                          ? const Color.fromARGB(255, 228, 160, 136)
+                          : const Color.fromARGB(255, 56, 154, 196),
                       fontWeight: FontWeight.w900,
                       fontSize: 40),
                   textAlign: TextAlign.center,
