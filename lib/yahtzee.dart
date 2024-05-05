@@ -11,21 +11,41 @@ class YahtzeeGamePage extends StatefulWidget {
 }
 
 class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
+  // constants
+  final int diceAmount = 5;
+  final int scoreBlockAmount = 13;
+  // state variables
   int _diceRolledTimes = 0;
-  final List<int> _dicePoints = List.filled(5, 0);
-  final List<bool> _diceLock = List.filled(5, false);
-  List<bool> _scoreLock = List.filled(13, false);
+  late List<int> _dicePoints;
+  late List<bool> _diceLock;
+  late List<bool> _scoreLock;
+  late List<bool> _isScorePlayed;
+  late List<int> _playScore;
+  int _newScoreIndex = -1;
   int _newScore = 0;
+  int _totalScore = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _dicePoints = List.filled(diceAmount, 0);
+    _diceLock = List.filled(diceAmount, false);
+    _scoreLock = List.filled(scoreBlockAmount, false);
+    _isScorePlayed = List.filled(scoreBlockAmount, false);
+    _playScore = List.filled(scoreBlockAmount, -1);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(_newScore.toString()),
+        Text('$_totalScore $_diceRolledTimes'),
         ScoreSection(
           dicePoints: _dicePoints,
           lockScore: lockScore,
           scoreLock: _scoreLock,
+          isScorePlayed: _isScorePlayed,
+          playScore: _playScore,
         ),
         DiceRow(
           dicePoints: _dicePoints,
@@ -36,6 +56,11 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
           onPressed: rollDice,
           rolledTimes: _diceRolledTimes,
         ),
+        if (_diceRolledTimes >= 1)
+          ScorePlayButton(
+            playScore: playScore,
+            scoreSelected: scoreSelected(),
+          )
       ],
     );
   }
@@ -47,7 +72,7 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
       if (_diceRolledTimes <= 2) {
         _diceRolledTimes++;
         Random random = Random();
-        for (int i = 0; i <= 4; i++) {
+        for (int i = 0; i < diceAmount; i++) {
           if (!_diceLock[i]) {
             int randomNumber = random.nextInt(6) + 1;
             _dicePoints[i] = randomNumber;
@@ -64,19 +89,46 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
   }
 
   void unlockScore() {
-    _scoreLock = List.filled(13, false);
+    _scoreLock = List.filled(scoreBlockAmount, false);
+    _newScore = 0;
   }
 
   void lockScore(int scoreIndex, int score) {
     setState(() {
-      if (!_scoreLock[scoreIndex]) {
-        unlockScore();
-        _scoreLock[scoreIndex] = true;
-      } else {
-        unlockScore();
+      if (_isScorePlayed[scoreIndex] == false) {
+        if (!_scoreLock[scoreIndex]) {
+          unlockScore();
+          _scoreLock[scoreIndex] = true;
+          _newScoreIndex = scoreIndex;
+        } else {
+          unlockScore();
+          _newScoreIndex = -1;
+        }
+        _newScore = score;
       }
+    });
+  }
 
-      _newScore = score;
+  bool scoreSelected() {
+    return _newScoreIndex >= 0;
+  }
+
+  void resetDice() {
+    _diceRolledTimes = 0;
+    _dicePoints = List.filled(diceAmount, 0);
+    _diceLock = List.filled(diceAmount, false);
+  }
+
+  void playScore() {
+    setState(() {
+      if (_isScorePlayed[_newScoreIndex] == false) {
+        _totalScore += _newScore;
+        _isScorePlayed[_newScoreIndex] = true;
+        _playScore[_newScoreIndex] = _newScore;
+        _newScoreIndex = -1;
+        unlockScore();
+        resetDice();
+      }
     });
   }
 }

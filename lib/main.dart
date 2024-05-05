@@ -1,4 +1,4 @@
-import  'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:yahtzee/yahtzee.dart';
 
 void main() {

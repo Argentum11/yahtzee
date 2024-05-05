@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
 class ScoreSection extends StatefulWidget {
-  const ScoreSection(
-      {super.key,
-      required this.dicePoints,
-      required this.lockScore,
-      required this.scoreLock});
+  const ScoreSection({
+    super.key,
+    required this.dicePoints,
+    required this.lockScore,
+    required this.scoreLock,
+    required this.isScorePlayed,
+    required this.playScore,
+  });
   final List<int> dicePoints;
   final Function(int, int) lockScore;
   final List<bool> scoreLock;
+  final List<bool> isScorePlayed;
+  final List<int> playScore;
 
   @override
   State<ScoreSection> createState() => _ScoreSectionState();
@@ -23,6 +28,8 @@ class _ScoreSectionState extends State<ScoreSection> {
           dicePoints: widget.dicePoints,
           lockScore: widget.lockScore,
           scoreLock: widget.scoreLock,
+          isScorePlayed: widget.isScorePlayed,
+          playScore: widget.playScore,
         ),
       ],
     );
@@ -30,21 +37,26 @@ class _ScoreSectionState extends State<ScoreSection> {
 }
 
 class ScoreData {
-  final int score;
+  int score;
   final String image;
 
-  const ScoreData(this.score, this.image);
+  ScoreData(this.score, this.image);
 }
 
 class ScoreColumn extends StatefulWidget {
-  const ScoreColumn(
-      {super.key,
-      required this.dicePoints,
-      required this.lockScore,
-      required this.scoreLock});
+  const ScoreColumn({
+    super.key,
+    required this.dicePoints,
+    required this.lockScore,
+    required this.scoreLock,
+    required this.isScorePlayed,
+    required this.playScore,
+  });
   final List<int> dicePoints;
   final Function(int, int) lockScore;
   final List<bool> scoreLock;
+  final List<bool> isScorePlayed;
+  final List<int> playScore;
 
   @override
   State<ScoreColumn> createState() => _ScoreColumnState();
@@ -191,6 +203,11 @@ class _ScoreColumnState extends State<ScoreColumn> {
         .add(ScoreData(largeStraight(widget.dicePoints), "large_straight"));
     allScoreData.add(ScoreData(yahtzee(widget.dicePoints), "yahtzee"));
     allScoreData.add(ScoreData(chance(widget.dicePoints), "chance"));
+    for (int i = 0; i < 13; i++) {
+      if (widget.isScorePlayed[i]) {
+        allScoreData[i].score = widget.playScore[i];
+      }
+    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,6 +224,7 @@ class _ScoreColumnState extends State<ScoreColumn> {
                 scoreIndex: i,
                 lockScore: widget.lockScore,
                 blockLock: widget.scoreLock[i],
+                isPlayed: widget.isScorePlayed[i],
               )
           ],
         ),
@@ -218,10 +236,12 @@ class _ScoreColumnState extends State<ScoreColumn> {
           children: [
             for (int i = 6; i <= 12; i++)
               ScoreRow(
-                  scoreData: allScoreData[i],
-                  scoreIndex: i,
-                  lockScore: widget.lockScore,
-                  blockLock: widget.scoreLock[i])
+                scoreData: allScoreData[i],
+                scoreIndex: i,
+                lockScore: widget.lockScore,
+                blockLock: widget.scoreLock[i],
+                isPlayed: widget.isScorePlayed[i],
+              )
           ],
         )
       ],
@@ -232,16 +252,19 @@ class _ScoreColumnState extends State<ScoreColumn> {
 const double blockSize = 58;
 
 class ScoreRow extends StatefulWidget {
-  const ScoreRow(
-      {super.key,
-      required this.scoreData,
-      required this.scoreIndex,
-      required this.lockScore,
-      required this.blockLock});
+  const ScoreRow({
+    super.key,
+    required this.scoreData,
+    required this.scoreIndex,
+    required this.lockScore,
+    required this.blockLock,
+    required this.isPlayed,
+  });
   final ScoreData scoreData;
   final int scoreIndex;
   final Function(int, int) lockScore;
   final bool blockLock;
+  final bool isPlayed;
 
   @override
   State<ScoreRow> createState() => _ScoreRowState();
@@ -263,12 +286,14 @@ class _ScoreRowState extends State<ScoreRow> {
           scoreIndex: widget.scoreIndex,
           lockScore: widget.lockScore,
           blockLock: widget.blockLock,
+          isPlayed: widget.isPlayed,
         ),
         ScoreBlock(
           score: widget.scoreData.score,
           scoreIndex: widget.scoreIndex,
           lockScore: widget.lockScore,
           blockLock: widget.blockLock,
+          isPlayed: widget.isPlayed,
         )
       ],
     );
@@ -276,16 +301,19 @@ class _ScoreRowState extends State<ScoreRow> {
 }
 
 class ScoreBlock extends StatelessWidget {
-  const ScoreBlock(
-      {super.key,
-      required this.score,
-      required this.scoreIndex,
-      required this.lockScore,
-      required this.blockLock});
+  const ScoreBlock({
+    super.key,
+    required this.score,
+    required this.scoreIndex,
+    required this.lockScore,
+    required this.blockLock,
+    required this.isPlayed,
+  });
   final int score;
   final int scoreIndex;
   final Function(int, int) lockScore;
   final bool blockLock;
+  final bool isPlayed;
 
   @override
   Widget build(BuildContext context) {
@@ -296,7 +324,11 @@ class ScoreBlock extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: blockLock ? Colors.blue : Colors.transparent,
+            color: isPlayed
+                ? Colors.transparent
+                : blockLock
+                    ? Colors.blue
+                    : Colors.transparent,
             width: 0.8,
           ),
           borderRadius: BorderRadius.circular(8.0),
@@ -329,9 +361,32 @@ class ScoreBlock extends StatelessWidget {
   }
 }
 
-//one https://www.flaticon.com/free-icon/one_8286872
-//two https://www.flaticon.com/free-icon/two_8286876
-// three https://www.flaticon.com/free-icon/three_8286875
-//four https://www.flaticon.com/free-icon/four_8286870
-// five https://www.flaticon.com/free-icon/five_8286868?term=dice&related_id=8286868
-// six https://www.flaticon.com/free-icon/six_8286874
+class ScorePlayButton extends StatelessWidget {
+  const ScorePlayButton({
+    super.key,
+    required this.playScore,
+    required this.scoreSelected,
+  });
+  final Function() playScore;
+  final bool scoreSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton(
+      style: FilledButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue,
+        fixedSize: const Size(200, 70),
+      ),
+      onPressed: scoreSelected
+          ? () {
+              playScore();
+            }
+          : null,
+      child: const Text(
+        "PLAY",
+        style: TextStyle(fontSize: 40),
+      ),
+    );
+  }
+}
