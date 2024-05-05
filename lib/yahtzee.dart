@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yahtzee/roll.dart';
 import 'package:yahtzee/score.dart';
+import 'package:yahtzee/player.dart';
 import 'dart:math';
 
 class YahtzeeGamePage extends StatefulWidget {
@@ -39,7 +40,10 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('$_totalScore $_diceRolledTimes'),
+        PlayerBlock(
+          player1Score: _totalScore,
+          player2Score: 0,
+        ),
         ScoreSection(
           dicePoints: _dicePoints,
           lockScore: lockScore,

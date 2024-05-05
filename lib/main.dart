@@ -11,14 +11,19 @@ class MyApp extends StatelessWidget {
   //  root of this application.
   @override
   Widget build(BuildContext context) {
+    const Color gameBackgroundColor = Color.fromARGB(255, 15, 117, 178);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: YahtzeeGamePage(),
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: gameBackgroundColor,
+        ),
+        body: const YahtzeeGamePage(),
+        backgroundColor: gameBackgroundColor,
       ),
       debugShowCheckedModeBanner: false,
     );
