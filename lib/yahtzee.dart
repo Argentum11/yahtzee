@@ -4,6 +4,30 @@ import 'package:yahtzee/score.dart';
 import 'package:yahtzee/player.dart';
 import 'dart:math';
 
+const int scoreBlockAmount = 13;
+
+class Player {
+  late int totalScore;
+  late List<bool> _isScorePlayed;
+
+  Player() {
+    totalScore = 0;
+    _isScorePlayed = List.filled(scoreBlockAmount, false);
+  }
+
+  void addScore(int newTotalScore) {
+    if (newTotalScore >= 0) {
+      totalScore += newTotalScore;
+    }
+  }
+
+  void saveScoreBlockState(List<bool> currentIsScorePlayed) {
+    for (int i = 0; i < currentIsScorePlayed.length; i++) {
+      _isScorePlayed[i] = currentIsScorePlayed[i];
+    }
+  }
+}
+
 class YahtzeeGamePage extends StatefulWidget {
   const YahtzeeGamePage({super.key});
 
@@ -14,7 +38,7 @@ class YahtzeeGamePage extends StatefulWidget {
 class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
   // constants
   final int diceAmount = 5;
-  final int scoreBlockAmount = 13;
+
   // state variables
   int _diceRolledTimes = 0;
   late List<int> _dicePoints;
@@ -24,7 +48,8 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
   late List<int> _playScore;
   int _newScoreIndex = -1;
   int _newScore = 0;
-  int _totalScore = 0;
+  late List<Player> _players;
+  late int _turn;
 
   @override
   void initState() {
@@ -34,6 +59,11 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
     _scoreLock = List.filled(scoreBlockAmount, false);
     _isScorePlayed = List.filled(scoreBlockAmount, false);
     _playScore = List.filled(scoreBlockAmount, -1);
+    _players = [
+      Player(),
+      Player(),
+    ];
+    _turn = 0;
   }
 
   @override
@@ -41,8 +71,9 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
     return Column(
       children: [
         PlayerBlock(
-          player1Score: _totalScore,
-          player2Score: 0,
+          player1Score: _players[0].totalScore,
+          player2Score: _players[1].totalScore,
+          turn: _turn,
         ),
         ScoreSection(
           dicePoints: _dicePoints,
@@ -126,13 +157,25 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
   void playScore() {
     setState(() {
       if (_isScorePlayed[_newScoreIndex] == false) {
-        _totalScore += _newScore;
+        _players[_turn].addScore(_newScore);
+        // score block disabled until next game
         _isScorePlayed[_newScoreIndex] = true;
         _playScore[_newScoreIndex] = _newScore;
         _newScoreIndex = -1;
         unlockScore();
         resetDice();
+        switchPlayer();
       }
     });
+  }
+
+  void loadScoreBlockState(Player currentPlayer) {
+    for (int i = 0; i < currentPlayer._isScorePlayed.length; i++) {
+      _isScorePlayed[i] = currentPlayer._isScorePlayed[i];
+    }
+  }
+
+  void switchPlayer() {
+    _turn = 1 - _turn;
   }
 }
