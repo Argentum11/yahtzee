@@ -1,41 +1,5 @@
 import 'package:flutter/material.dart';
 
-class ScoreSection extends StatefulWidget {
-  const ScoreSection({
-    super.key,
-    required this.dicePoints,
-    required this.lockScore,
-    required this.scoreLock,
-    required this.isScorePlayed,
-    required this.playScore,
-  });
-  final List<int> dicePoints;
-  final Function(int, int) lockScore;
-  final List<bool> scoreLock;
-  final List<bool> isScorePlayed;
-  final List<int> playScore;
-
-  @override
-  State<ScoreSection> createState() => _ScoreSectionState();
-}
-
-class _ScoreSectionState extends State<ScoreSection> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ScoreColumn(
-          dicePoints: widget.dicePoints,
-          lockScore: widget.lockScore,
-          scoreLock: widget.scoreLock,
-          isScorePlayed: widget.isScorePlayed,
-          playScore: widget.playScore,
-        ),
-      ],
-    );
-  }
-}
-
 class ScoreData {
   int score;
   final String image;

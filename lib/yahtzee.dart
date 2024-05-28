@@ -75,7 +75,7 @@ class _YahtzeeGamePageState extends State<YahtzeeGamePage> {
           player2Score: _players[1].totalScore,
           turn: _turn,
         ),
-        ScoreSection(
+        ScoreColumn(
           dicePoints: _dicePoints,
           lockScore: lockScore,
           scoreLock: _scoreLock,
